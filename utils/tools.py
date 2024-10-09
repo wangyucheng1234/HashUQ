@@ -612,26 +612,12 @@ def validate(config, Best_mAP, test_loader, dataset_loader, net, bit, epoch, num
         trn_binary, trn_label = compute_result(dataset_loader, net, config, device=device)
     elif config["rt_st"] == "hamuct":
         trn_binary, trn_label, trn_uct, trn_prob = compute_result(dataset_loader, net, config, device=device, uct = True)
-        plt.scatter(trn_uct[0].cpu(), trn_uct[1].cpu())
-        plt.xlabel("Avg Entropy")
-        plt.ylabel("Sig Variance")
-        plt.savefig(os.path.join(config["save_path"], "SigVar.png"))
-        plt.clf()
-        plt.scatter(trn_uct[0].cpu(), trn_uct[2].cpu())
-        plt.xlabel("Avg Entropy")
-        plt.ylabel("Variance")
-        plt.savefig(os.path.join(config["save_path"], "Sar.png"))
-        plt.clf()
-        print("tst_label", tst_label.shape)
-        print("tst_prob", tst_prob.shape)
         for i in range(len(trn_uct)):
             if config["uct_quant_level"] != 0:
                 quantile = find_quantile(trn_uct[i].detach().cpu().numpy(), equal = False, quant_level = config["uct_quant_level"])
                 trn_uct[i] = quantize_data(trn_uct[i], quantile)
             else:
                 trn_uct[i] = trn_uct[i].detach().cpu().numpy()
-        # print("trn_entropy:", trn_entropy.shape)
-        # print("trn_entropy:", trn_entropy)
         
 
     if "pr_curve_path" not in  config:
@@ -640,8 +626,7 @@ def validate(config, Best_mAP, test_loader, dataset_loader, net, bit, epoch, num
         if config["rt_st"] == "hamuct":
             for i in range(len(trn_uct)):
                 mAP_uct = CalcTopMap_Uct(trn_binary.numpy(), tst_binary.numpy(), trn_label.numpy(), tst_label.numpy(), config["topK"], trn_uct[i])
-                print("mAP_Uct", mAP_uct)
-        
+        print("mAP_With_Uct", mAP_uct)
     else:
         # need more memory
         mAP, cum_prec, cum_recall = CalcTopMapWithPR(tst_binary.numpy(), tst_label.numpy(),

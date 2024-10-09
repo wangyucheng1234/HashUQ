@@ -39,3 +39,5 @@ results/CSQ_Coco_OT.txt
 CodeBalanceAnalysis.ipynb
 BalanceAnalysis.bat
 saved_model/BerVAE_bit_16_optimizer_cf_KL_1.00_dataset_imagenet/hash_target.npy
+*.pt
+*.npy
